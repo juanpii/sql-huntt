@@ -1,0 +1,149 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#===========================
+#   IMPORTS
+#===========================
+import urllib, urllib2
+import sys
+from Attack import *
+from messages import *
+from module import *
+
+
+#===================================
+#   VARS
+#===================================
+# SYS
+exec_name = sys.argv[0]
+# Init of the attack
+attack = Attack(    False, # If the url is valid
+					False, # The target Url
+					False, # If the url Has a payload
+					False, # If it's a blind injection
+					False  # The specified attack (Only if the url has a payload)
+				)
+
+#====================================================================================================================
+#
+#   BEGIN
+#
+#====================================================================================================================
+
+#print "This is the name of the script: ", sys.argv[0]
+#print "Number of arguments: ", len(sys.argv)
+#print "The arguments are: " , str(sys.argv)
+
+# ============================================
+#   USAGE
+# ============================================
+
+# Show advanced usage of SQLHunt
+if sys.argv[1] == "--full-help":
+	SHOW_FULL_USAGE( exec_name )
+	sys.exit()
+	pass
+
+if len( sys.argv ) <= 1 or sys.argv[1] == "-help":
+	SHOW_USAGE( exec_name )
+	sys.exit()
+	pass
+
+# ============================================
+#   GET URL PASSED WITH THE PARAMETERS
+# ============================================
+if sys.argv[1] == '-u' and len( sys.argv ) > 2:
+	attack.target_url = sys.argv[2].lower().strip("\"")
+	# Check if it's a valid URL, if it is continue
+	if check_url(attack.target_url) == True:
+		attack.valid_url = True
+	else:
+		SCRIPT_ERROR( invalid_url )
+else:
+	SHOW_USAGE( exec_name )
+	sys.exit()
+
+
+
+# ===================================================================================================
+#
+#   CORE
+#
+# ===================================================================================================
+# Continue only if URL is valid
+if attack.valid_url != True:
+	sys.exit()
+
+# ====================================================================================
+#   URL WITH PAYLOAD
+# ====================================================================================
+SCRIPT_BOLD( begin_msg )
+
+# Check if there is a payload in the url
+if has_payload( attack.target_url ):
+	attack.has_payload = True
+	# We check if it's a blind Injection or not
+	if is_blind( attack.target_url ):
+		attack.is_blind_injection = True
+
+	# Check if the user has passed attack parameters
+	if len( sys.argv ) > 3 :
+		SCRIPT_GOOD( continue_msg )
+		attack.specified_attack = sys.argv[ 3 ]
+	else:
+		SCRIPT_WARNING( warning_url_with_payload_without_params + "\n" )
+		SHOW_PAYLOAD_ATTACKS( exec_name )
+		sys.exit()
+
+else:
+	attack.has_payload = False
+
+
+# =============================================================
+#   NOT BLIND INJECTION
+# =============================================================
+# General verifications 
+if not attack.is_blind_injection and attack.has_payload:
+	##### ADD IF with Database Dump?
+	# Check if the parameter is known by SQLHunt
+	if attack.specified_attack == "--limit-tables":
+		SCRIPT_INFO( "Attack: " + attack.specified_attack )
+		##### Add SELECT PARAMS INTO AN ARRAY
+		# Execute payload to see if the injection works
+		SCRIPT_INFO( payload_verification_msg )
+		try:
+			print attack.target_url
+			# URLIB Request
+			req = urllib2.Request( attack.target_url )
+			response = urllib2.urlopen( req )
+			# HTML response
+			html_page = response.read()
+			print(html_page)
+		except:
+			SCRIPT_ERROR( error_urllib_exception )
+			sys.exit()
+	else:
+		SCRIPT_ERROR( invalid_specified_attack )
+		SCRIPT_ERROR( "Option " + attack.specified_attack + " is not known by SQLHunt\n" )
+		SHOW_PAYLOAD_ATTACKS( exec_name )
+		sys.exit()
+
+# Verify if the payload works
+# Verifier si le payload fonctionne
+# Si le payload fonctionne pas c'est peut être parce que le résultat est ailleurs
+
+# =============================================================
+#   BLIND INJECTION
+# =============================================================
+
+
+
+
+
+
+
+
+# ====================================================================================
+#   URL WITHOUT PAYLOAD
+# ====================================================================================
+# TO DO
+# Verify is payload is bad or there is no payload
