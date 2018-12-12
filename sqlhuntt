@@ -36,28 +36,25 @@ attack = Attack(    False, # If the url is valid
 # ============================================
 #   USAGE
 # ============================================
-
-# Show advanced usage of SQLHunt
-if sys.argv[1] == "--full-help":
-	SHOW_FULL_USAGE( exec_name )
+# Show advanced usage of SQLHuntt
+if len(sys.argv) > 1 and sys.argv[1] == C_FULL_HELP:
+	SHOW_FULL_USAGE(exec_name)
 	sys.exit()
-	pass
-
-if len( sys.argv ) <= 1 or sys.argv[1] == "-help":
-	SHOW_USAGE( exec_name )
-	sys.exit()
-	pass
 
 # ============================================
 #   GET URL PASSED WITH THE PARAMETERS
 # ============================================
-if sys.argv[1] == '-u' and len( sys.argv ) > 2:
+if sys.argv[1] == C_URL and len( sys.argv ) > 2:
 	attack.target_url = sys.argv[2].lower().strip("\"")
 	# Check if it's a valid URL, if it is continue
 	if check_url(attack.target_url) == True:
 		attack.valid_url = True
 	else:
+		##### ADD WHY THE ERROR IS NOT VALID
+		##### CREATE FUNCTION: CHECK URL ERROR THAT RETURNS THE EXACT PROBLEM WITH THE URL
+		##### PRINT THE RETURNED MESSAGE ON COMMAND LINE
 		SCRIPT_ERROR( invalid_url )
+		sys.exit()
 else:
 	SHOW_USAGE( exec_name )
 	sys.exit()
@@ -104,32 +101,29 @@ else:
 # General verifications 
 if not attack.is_blind_injection and attack.has_payload:
 	##### ADD IF with Database Dump?
-	# Check if the parameter is known by SQLHunt
-	if attack.specified_attack == "--limit-tables":
-		SCRIPT_INFO( "Attack: " + attack.specified_attack )
+	# Check if the parameter is known by SQLHuntt
+	if attack.specified_attack == C_UNION:
+		SCRIPT_BOLD( "Attack: " + attack.specified_attack )
+		SCRIPT_WARNING( not_implemented_attack_msg )
+
+	elif attack.specified_attack == C_UNION_LIMIT:
+		SCRIPT_BOLD( "Attack: " + attack.specified_attack )
 		##### Add SELECT PARAMS INTO AN ARRAY
-		# Execute payload to see if the injection works
-		SCRIPT_INFO( payload_verification_msg )
-		try:
-			print attack.target_url
-			# URLIB Request
-			req = urllib2.Request( attack.target_url )
-			response = urllib2.urlopen( req )
-			# HTML response
-			html_page = response.read()
-			print(html_page)
-		except:
-			SCRIPT_ERROR( error_urllib_exception )
-			sys.exit()
 	else:
 		SCRIPT_ERROR( invalid_specified_attack )
-		SCRIPT_ERROR( "Option " + attack.specified_attack + " is not known by SQLHunt\n" )
+		SCRIPT_ERROR_SIMPLE( "Option " + attack.specified_attack + " is not known by " + V_NAME + "\n" )
 		SHOW_PAYLOAD_ATTACKS( exec_name )
 		sys.exit()
 
-# Verify if the payload works
-# Verifier si le payload fonctionne
-# Si le payload fonctionne pas c'est peut être parce que le résultat est ailleurs
+# ===========================================================
+# 	IF THE ATTACKS IS KNOW WE CONTINUE
+# ===========================================================
+##### CHECK IF THE PAYLOAD WORKS
+# SCRIPT_INFO( payload_verification_msg )
+
+
+
+
 
 # =============================================================
 #   BLIND INJECTION

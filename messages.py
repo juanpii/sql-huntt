@@ -4,7 +4,7 @@
 begin_msg = "Starting SQLHunt..."
 continue_msg = "The attack seems to have a specific attack option"
 payload_verification_msg = "Testing if the payload works..."
-
+not_implemented_attack_msg = "This attack has not been implemented yet."
 
 # ==============================================
 #	WARNING MESSAGES	

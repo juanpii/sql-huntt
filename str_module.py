@@ -38,9 +38,14 @@ def check_result( string, start_delimiter, end_delimiter ):
 def SCRIPT_INFO( message ):
 	print( message )
 
-# Prints a red color message
+# Prints a red ERROR color message
 def SCRIPT_ERROR( message ):
-	print( bcolors.BOLD + bcolors.FAIL + "Error: " + message + bcolors.END ) 
+	print( bcolors.BOLD + bcolors.FAIL + "Error: " + message + bcolors.END )
+
+# Prints a red color message
+def SCRIPT_ERROR_SIMPLE( message ):
+	print( bcolors.BOLD + bcolors.FAIL + message + bcolors.END ) 
+
 # Prints a yellow color message
 def SCRIPT_WARNING( message ):
 	print( bcolors.WARNING + message + bcolors.END )
